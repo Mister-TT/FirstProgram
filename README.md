@@ -1,2 +1,4 @@
 # TT-HOUSE
-I'm greenhand
+Hello, I'm a college student in China.
+Actually, I'm a green hand.
+See you.
