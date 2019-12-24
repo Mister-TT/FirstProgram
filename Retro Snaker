@@ -1,0 +1,267 @@
+#include<iostream>
+#include<conio.h>
+#include<Windows.h>
+#include<cstdlib>
+#include<ctime>
+#include<cstring>
+using namespace std;
+
+int x_food;
+int y_food;
+int ch;
+int x_where;
+int y_where;
+int xy_keyboard = 10;
+int count;
+int food = 0;
+char keyboard[10][10];
+int now = 0;
+
+struct body
+{
+	int x;
+	int y;
+	int now;
+};
+body S[110];
+
+void change(int count);
+void body();
+bool error(int x,int y);
+void creatfood();
+
+void operation();
+void which();
+void print(int x_where,int y_where);
+
+int main()
+{
+    int ch =0;
+    while(ch!=27)
+    {
+        count = 0;
+        srand((unsigned)time(0));
+        x_where = rand()%10;
+        srand((unsigned)time(0));
+        y_where = rand()%10;
+
+        while(1)
+		{
+			if(food == 0)creatfood();
+			cout<<"欢迎来玩Mister_TT出品的简易贪吃蛇！"<<endl;
+			print(x_where,y_where);
+      		Sleep(200);
+			operation();
+			if(error(x_where,y_where))break;
+			body();
+			system("cls");
+        }
+
+
+		cout<<"按ESC键结束游戏，或按任意键继续游戏！"<<endl;
+        ch = _getch();
+        system("cls");
+    }
+}
+
+void operation()
+{
+	if(kbhit() != 0) //检查当前是否有键盘输入，若有则返回一个非0值，否则返回0  
+ 	{   
+  		while(kbhit() != 0)  //可能存在多个按键,要全部取完,以最后一个为主  
+      	ch = getch(); //将按键从控制台中取出并保存到key中  
+ 	}
+	   
+    switch(ch)
+    {
+        case 72:
+            now = 1;
+            x_where--;
+            break;
+        case 80:
+            now = 2;
+            x_where++;
+            break;
+        case 75:
+            now = 3;
+            y_where--;
+            break;
+        case 77:
+            now = 4;
+            y_where++;
+            break;
+    }
+    
+}
+
+void print(int x,int y)
+{
+    memset(keyboard,'+',sizeof(keyboard));
+    keyboard[x][y] = '@';
+   	
+    if( x == x_food && y == y_food && count == 0)
+    {
+        switch(now)
+        {
+            case 1:
+                S[count].x = x+1;
+                S[count].y = y;
+                break;
+            case 2:
+                S[count].x = x-1;
+                S[count].y = y;
+                break;
+            case 3:
+                S[count].x = x;
+                S[count].y = y+1;
+                break;
+            case 4:
+                S[count].x = x;
+                S[count].y = y-1;
+                break;
+        }
+        
+        count++;
+        food = 0;
+    }
+    
+    else if( x == x_food && y == y_food &&count != 0)
+    {
+        switch(S[count-1].now)
+        {
+            case 1:
+                S[count].x = S[count - 1].x+1;
+                S[count].y = S[count - 1].y;
+                break;
+            case 2:
+                S[count].x = S[count - 1].x-1;
+                S[count].y = S[count - 1].y;
+                break;
+            case 3:
+                S[count].x = S[count - 1].x;
+                S[count].y = S[count - 1].y+1;
+                break;
+            case 4:
+                S[count].x = S[count - 1].x;
+                S[count].y = S[count - 1].y-1;
+                break;
+        }
+        
+        count++;
+        food = 0;
+    }
+   	
+
+    else
+    {
+        keyboard[x_food][y_food]='#';
+    }
+
+	for(int i=0;i<count;i++)
+    {
+	    keyboard[S[i].x][S[i].y] = '1';
+    }
+	    
+    for(int a=0;a<10;a++)
+    {
+        for(int b=0;b<10;b++)
+        {
+            cout<<keyboard[a][b];
+        }
+        cout<<endl;
+    }
+}
+
+void creatfood()
+{
+    food = 1;
+    int SW = 0;
+
+    while(SW == 0)
+    { 
+		srand(time(0)*rand());
+        x_food = rand()%10;
+        srand(time(0)*rand());
+        y_food = rand()%10;
+    	
+		SW = 1;
+    	
+    	if(x_food == x_where && x_food == x_where)SW = 0;
+    	
+		for(int a=0;a<count;a++)
+		{
+			if(S[a].x == x_food && S[a].y == y_food)
+			{
+				SW = 0;
+			}
+		}
+    }
+}
+
+bool error(int x,int y)
+{
+	if(x>9||x<0||y>9||y<0)return true;
+	
+	for(int i=0;i<count;i++)
+	{
+		if(x == S[i].x && y==S[i].y )return true;
+	}
+	
+	
+	return false;
+}
+
+void body()
+{
+    if (count == 0)return;
+    else
+    {
+        for(int i =count-1;i>=0;i--)
+        {
+            if(i!=0)
+            {
+                S[i].now = S[i-1].now;
+            }
+            else
+            {
+                S[i].now = now;
+            }
+
+        }
+
+        for(int i =count-1;i>=0;i--)
+        {   
+        	if(i!=0)
+        	{
+	            S[i].x = S[i-1].x;
+                S[i].y = S[i-1].y;
+       		}
+       		
+       		else
+       		{
+			    switch(S[0].now)
+	            {
+	                case 1:
+	                    S[i].x = x_where+1;
+	                    S[i].y = y_where;
+	                    break;
+	                
+	                case 2:
+	                    S[i].x = x_where-1;
+	                    S[i].y = y_where;
+	                    break;
+	
+	                case 3:
+	                    S[i].x = x_where;
+	                    S[i].y = y_where+1;
+	                    break;
+	
+	                case 4:
+	                    S[i].x = x_where;
+	                    S[i].y = y_where-1;
+	                    break;
+	            }
+	        }
+        }
+    }
+}
